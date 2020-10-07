@@ -2,3 +2,5 @@ data/
 venv/
 *.png
 *.h5
+logs/
+model/
