@@ -4,3 +4,4 @@ venv/
 *.h5
 logs/
 model/
+.DS_Store
