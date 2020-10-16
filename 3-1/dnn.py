@@ -55,8 +55,7 @@ class DNNModel(tf.Module):
         self.w3 = tf.Variable(tf.random.truncated_normal([8, 1]), dtype=tf.float32)
         self.b3 = tf.Variable(tf.zeros([1, 1]), dtype=tf.float32)
 
-    tf.function(input_signature=[tf.TensorSpec(shape=[None, 2], dtype=tf.float32)])
-
+    @tf.function(input_signature=[tf.TensorSpec(shape=[None, 2], dtype=tf.float32)])
     def __call__(self, x):
         x = tf.nn.relu(x @ self.w1 + self.b1)
         x = tf.nn.relu(x @ self.w2 + self.b2)
