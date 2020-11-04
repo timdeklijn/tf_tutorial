@@ -4,5 +4,7 @@ venv/
 *.png
 *.h5
 logs/
+log/
 model/
 .DS_Store
+.vscode/
