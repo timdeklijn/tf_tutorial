@@ -1,5 +1,7 @@
+from itertools import dropwhile
 import os
 from typing import Iterator, Tuple, Any, Union
+from numpy.core.fromnumeric import resize
 import tensorflow as tf
 import numpy as np
 import pandas as pd
@@ -178,6 +180,120 @@ def plot_tf_records_ds():
     plt.savefig("from_records.png")
 
 
+# Dataset Conversions/Operations =======================================================
+
+
+def map_a_dataset():
+    ds = tf.data.Dataset.from_tensor_slices(["Hello World", "Hello NL", "Hello TF"])
+    ds_map = ds.map(lambda x: tf.strings.split(x, " "))
+    for x in ds_map:
+        print(x)
+
+
+def flatmap_a_dataset():
+    ds = tf.data.Dataset.from_tensor_slices(["hello world", "Hello NL", "Hello TF"])
+    ds_flatmap = ds.flat_map(
+        lambda x: tf.data.Dataset.from_tensor_slices(tf.strings.split(x, " "))
+    )
+    for x in ds_flatmap:
+        print(x)
+
+
+def interleave_a_dataset():
+    ds = tf.data.Dataset.from_tensor_slices(["hello world", "Hello NL", "Hello TF"])
+    ds_interleave = ds.interleave(
+        lambda x: tf.data.Dataset.from_tensor_slices(tf.strings.split(x, " "))
+    )
+    for x in ds_interleave:
+        print(x)
+
+
+def filter_a_dataset():
+    ds = tf.data.Dataset.from_tensor_slices(["hello world", "Hello NL", "Hello TF"])
+    ds_filter = ds.filter(lambda x: tf.strings.regex_full_match(x, ".*[N|F].*"))
+    for x in ds_filter:
+        print(x)
+
+
+def zip_datasets():
+    ds1 = tf.data.Dataset.range(0, 3)
+    ds2 = tf.data.Dataset.range(3, 6)
+    ds3 = tf.data.Dataset.range(6, 9)
+    ds_zip = tf.data.Dataset.zip((ds1, ds2, ds3))
+    for x, y, z in ds_zip:
+        print(x.numpy(), y.numpy(), z.numpy())
+
+
+def concatenate_datasets():
+    ds1 = tf.data.Dataset.range(0, 3)
+    ds2 = tf.data.Dataset.range(3, 6)
+    ds_concat = tf.data.Dataset.concatenate(ds1, ds2)
+    for x in ds_concat:
+        print(x)
+
+
+def reduce_a_dataset():
+    ds = tf.data.Dataset.from_tensor_slices([1, 2, 3, 4, 5.0])
+    result = ds.reduce(0.0, lambda x, y: tf.add(x, y))
+    print(result)
+
+
+def batch_a_dataset():
+    ds = tf.data.Dataset.range(12)
+    ds_batch = ds.batch(4)
+    for x in ds_batch:
+        print(x)
+
+
+def padded_batch_a_dataset():
+    elements = [[1, 2], [3, 4, 5], [6, 7], [8]]
+    ds = tf.data.Dataset.from_generator(lambda: iter(elements), tf.int32)
+    ds_padded_batch = ds.padded_batch(
+        2,
+        padded_shapes=[
+            4,
+        ],
+    )
+    for x in ds_padded_batch:
+        print(x)
+
+
+def window_a_dataset():
+    ds = tf.data.Dataset.range(12)
+    ds_window = ds.window(3, shift=1).flat_map(
+        lambda x: x.batch(3, drop_remainder=True)
+    )
+    for x in ds_window:
+        print(x)
+
+
+def shuffle_a_dataset():
+    ds = tf.data.Dataset.range(12)
+    ds_shuffle = ds.shuffle(buffer_size=5)
+    for x in ds_shuffle:
+        print(x)
+
+
+def repeat_a_dataset():
+    ds = tf.data.Dataset.range(3)
+    ds_repeat = ds.repeat(3)
+    for x in ds_repeat:
+        print(x)
+
+
+def shard_a_dataset():
+    ds = tf.data.Dataset.range(12)
+    ds_shard = ds.shard(3, index=1)
+    for x in ds_shard:
+        print(x)
+
+
+def sample_a_dataset():
+    ds = tf.data.Dataset.range(12)
+    ds_take = ds.take(3)
+    print(list(ds_take.as_numpy_iterator()))
+
+
 if __name__ == "__main__":
     # ds_numpy = ds_from_numpy_array()
     # ds = ds_from_pandas_dataframe()
@@ -185,5 +301,19 @@ if __name__ == "__main__":
     # ds = ds_from_csv_file()
     # ds = ds_from_text_file()
     # plot_from_file_path()
-    create_tf_records("../data/cifar2/test/", "data/test.tfrecords/")
-    plot_tf_records_ds()
+    # create_tf_records("../data/cifar2/test/", "data/test.tfrecords/")
+    # plot_tf_records_ds()
+    # map_a_dataset()
+    # flatmap_a_dataset()
+    # interleave_a_dataset()
+    # filter_a_dataset()
+    # zip_datasets()
+    # concatenate_datasets()
+    # reduce_a_dataset()
+    # batch_a_dataset()
+    # padded_batch_a_dataset()
+    # window_a_dataset()
+    # shuffle_a_dataset()
+    # repeat_a_dataset()
+    # shard_a_dataset()
+    sample_a_dataset()
